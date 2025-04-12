@@ -1,0 +1,143 @@
+body {
+    margin: 0;
+    font-family: 'Prompt', sans-serif;
+    background: #fffaf7;
+    overflow-x: hidden;
+  }
+  
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-top: 60px;
+    color: #cc6e6e;
+  }
+  
+  .message {
+    text-align: center;
+    font-size: 1.3em;
+    margin-top: 10px;
+    color: #a75757;
+  }
+  
+  #dragArea {
+    width: 100%;
+    height: 150px;
+    margin-top: 50px;
+    background-color: transparent;
+    touch-action: none;
+  }
+  
+  #scrollHint {
+    text-align: center;
+    font-size: 1.2em;
+    color: #999;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  
+  .section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    max-width: 1000px;
+    margin: auto;
+    flex-wrap: wrap;
+  }
+  
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .section img {
+    width: 250px;
+    max-width: 90%;
+    border-radius: 20px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    margin: 20px;
+  }
+  
+  .section .text {
+    max-width: 400px;
+    font-size: 1.2em;
+    color: #444;
+    margin: 20px;
+  }
+  
+  .last-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+    margin-top: 100px;
+  }
+  
+  .last-image.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .last-image img {
+    width: 90%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  }
+  
+  .last-image p {
+    margin-top: 30px;
+    font-size: 1.2em;
+    color: #a75757;
+    text-align: center;
+    max-width: 700px;
+  }
+  
+  .final-text {
+    opacity: 0;
+    transition: opacity 2s ease;
+    margin: 80px auto;
+    font-size: 1.3em;
+    color: #cc6e6e;
+    text-align: center;
+    line-height: 1.8;
+    max-width: 700px;
+  }
+  
+  .final-text.visible {
+    opacity: 1;
+  }
+  
+  #nextButton {
+    display: none;
+    margin: 40px auto;
+    text-align: center;
+  }
+  
+  #nextButton button {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    background-color: #ffaaaa;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  

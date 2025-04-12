@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Maze Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial';
+      background-color: #d3faff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: #083f2a;
+    }
+
+    #maze {
+      display: grid;
+      grid-template-columns: repeat(10, 35px);
+      grid-template-rows: repeat(10, 35px);
+      gap: 2px;
+      margin-bottom: 15px;
+    }
+
+    .cell {
+      width: 35px;
+      height: 35px;
+      background-color: #c2ebbb;
+      border: 1px solid #051409;
+    }
+
+    .danger {
+      background-image: url('/picture/snake.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
+
+    .wall {
+      background-color: #1d6e56;
+    }
+
+    .player {
+      background-image: url('/picture/man.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+    }
+
+    .player.left {
+      background-image: url('/picture/man.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+    }
+
+    .player.right {
+      background-image: url('/picture/man2.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+    } 
+
+    .key {
+      background-image: url('/picture/key.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+    }
+
+    .exit {
+      background-image: url('/picture/pool.png');
+      background-size: cover;
+      background-position: center;
+      width: 35px;
+      height: 35px;
+    }
+
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .arrow-btn {
+      padding: 10px;
+      font-size: 20px;
+      border: none;
+      background-color: #eac9c1;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 15px;
+      color: #6b4e3d;
+      font-weight: bold;
+    }
+
+    #nextBtn {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #ffb3b3;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+
+<body>
+
+  <h2>Find the Key and Escape the Maze</h2>
+  <div id="maze"></div>
+
+  <div id="controls">
+    <button class="arrow-btn" onclick="move('up')">⬆️</button><br>
+    <button class="arrow-btn" onclick="move('left')">⬅️</button>
+    <button class="arrow-btn" onclick="move('down')">⬇️</button>
+    <button class="arrow-btn" onclick="move('right')">➡️</button>
+  </div>
+
+  <div id="message"></div>
+  <button id="nextBtn" onclick="goToNextPage()">Next →</button>
+
+  <script>
+    const maze = [
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,1,0,0,0,0,1],
+      [1,0,1,0,1,0,1,1,0,1],
+      [1,0,1,0,0,0,1,0,0,1],
+      [1,0,1,1,1,0,1,0,1,1],
+      [1,0,0,0,1,0,0,0,0,1],
+      [1,1,1,0,1,1,1,1,0,1],
+      [1,0,0,0,1,0,0,0,0,1],
+      [1,0,1,0,0,0,1,1,2,1],
+      [1,1,1,1,1,1,1,1,1,1],
+    ];
+
+    const mazeContainer = document.getElementById("maze");
+    const message = document.getElementById("message");
+    const nextBtn = document.getElementById("nextBtn");
+
+    let playerPos = { x: 1, y: 1 };
+    let hasKey = false;
+
+    function drawMaze() {
+      mazeContainer.innerHTML = "";
+      for (let y = 0; y < maze.length; y++) {
+        for (let x = 0; x < maze[y].length; x++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          if (maze[y][x] === 1) cell.classList.add("wall");
+          if (x === playerPos.x && y === playerPos.y) {
+            const player = document.createElement("div");
+            player.classList.add("player");
+            if (playerMovingDirection === "left") player.classList.add("left");
+            if (playerMovingDirection === "right") player.classList.add("right");
+            cell.appendChild(player);
+          }
+          if (maze[y][x] === 2) cell.classList.add("exit");
+          if (maze[y][x] === 3) cell.classList.add("key");
+          if (maze[y][x] === 4) cell.classList.add("danger");
+          mazeContainer.appendChild(cell);
+        }
+      }
+    }
+
+    let playerMovingDirection = ""; // Track the current direction
+
+    // Place the key in a spot (row 1, col 5)
+    maze[1][5] = 3;
+    maze[5][5] = 4;
+    maze[8][1] = 4;
+
+    function move(direction) {
+      const dx = { left: -1, right: 1, up: 0, down: 0 };
+      const dy = { left: 0, right: 0, up: -1, down: 1 };
+
+      const newX = playerPos.x + dx[direction];
+      const newY = playerPos.y + dy[direction];
+
+      if (maze[newY][newX] !== 1) {
+        playerPos = { x: newX, y: newY };
+
+        // Set player movement direction for animation
+        playerMovingDirection = direction;
+
+        if (maze[newY][newX] === 3 && !hasKey) {
+          hasKey = true;
+          message.textContent = "You picked up the key! 🗝️";
+          maze[newY][newX] = 0;
+        }
+
+        if (maze[newY][newX] === 2 && hasKey) {
+          message.textContent = "You’ve unlocked something special…";
+          nextBtn.style.display = "inline-block";
+
+          const exitMusic = document.getElementById("exitMusic");
+          exitMusic.currentTime = 0;
+           exitMusic.play();
+
+        } else if (maze[newY][newX] === 2 && !hasKey) {
+          message.textContent = "You need the key to exit!";
+        } else {
+          message.textContent = "";
+        }
+
+        if (maze[newY][newX] === 4) {
+          const dangerSound = document.getElementById("dangerSound");
+          dangerSound.currentTime = 0;
+          dangerSound.play();
+          message.textContent = "You stepped on a snake 🐍";
+
+        setTimeout(() => {
+            dangerSound.pause(); // Stop the sound
+            dangerSound.currentTime = 0; // Reset sound to start
+            location.reload(); // Restart the game
+          }, 7000); // Wait 7 seconds before restarting
+
+          return;
+        }
+
+        drawMaze();
+      }
+    }
+
+      function goToNextPage() {
+      const exitMusic = document.getElementById("exitMusic");
+      exitMusic.pause();
+      exitMusic.currentTime = 0;
+      window.location.href = "hbd.html"; // Link to your next surprise page!
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") move("up");
+      if (e.key === "ArrowDown") move("down");
+      if (e.key === "ArrowLeft") move("left");
+      if (e.key === "ArrowRight") move("right");
+    });
+
+    drawMaze();
+  </script>
+
+  <audio id="dangerSound" src="/music/snakesound.mp4"></audio>
+  <audio id="exitMusic" src="/music/win.mp4"></audio>
+
+</body>
+</html>

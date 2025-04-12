@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday Dad</title>
+  <style>
+    body {
+      background: #fff5f5;
+      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 50px;
+    }
+
+    #cake-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    #cake {
+      width: 300px;
+      cursor: pointer;
+    }
+
+    .candle {
+      position: absolute;
+      width: 100px;
+      top: 60px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .lit {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px yellow);
+    }
+
+    .fire {
+      position: absolute;
+      width: 55px;
+      top: 45px; /* fire sits above candle */
+      display: none;
+    }
+
+    #candle1 { left: 45px; }
+    #candle2 { left: 100px; }
+    #candle3 { left: 155px; }
+
+    #fire1 { left: 68px; }
+    #fire2 { left: 123px; }
+    #fire3 { left: 178px; }
+
+    #message {
+      margin-top: 30px;
+      font-size: 24px;
+      color: #ff6f61;
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cake-container">
+  <img id="cake" src="/picture/cake.png" alt="Cake">
+  
+  <!-- Candles -->
+  <img id="candle1" class="candle" src="/picture/candle.png" alt="Candle">
+  <img id="candle2" class="candle" src="/picture/candle.png" alt="Candle">
+  <img id="candle3" class="candle" src="/picture/candle.png" alt="Candle">
+  
+  <!-- Fire flames -->
+  <img id="fire1" class="fire" src="/picture/fire.png" alt="Flame">
+  <img id="fire2" class="fire" src="/picture/fire.png" alt="Flame">
+  <img id="fire3" class="fire" src="/picture/fire.png" alt="Flame">
+</div>
+
+<div id="message">Happy Birthday, Dad!! 💗🎂</div>
+
+<div id="go-back" style="display: none; margin-top: 20px;">
+  <button onclick="location.href='index.html'" style="
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #ffb3b3;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+  ">Go to the First Page</button>
+</div>
+
+<audio id="birthday-audio" src="/music/happy.mp4"></audio>
+
+<script>
+  const candles = [
+    document.getElementById('candle1'),
+    document.getElementById('candle2'),
+    document.getElementById('candle3')
+  ];
+  const fires = [
+    document.getElementById('fire1'),
+    document.getElementById('fire2'),
+    document.getElementById('fire3')
+  ];
+  const cake = document.getElementById('cake');
+  const message = document.getElementById('message');
+  const audio = document.getElementById('birthday-audio');
+
+  let litCount = 0;
+  let allLit = false;
+
+  cake.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    cake.click();
+  });
+  cake.addEventListener('click', () => {
+  if (!allLit) {
+    if (litCount < candles.length) {
+      candles[litCount].classList.add('lit');
+      fires[litCount].style.display = 'block';
+      litCount++;
+    }
+    if (litCount === candles.length) {
+      allLit = true;
+    }
+  } else {
+    // Blow out candles
+    candles.forEach(c => c.classList.remove('lit'));
+    fires.forEach(f => f.style.display = 'none');
+    message.style.display = 'block';
+    audio.play();
+    document.getElementById('go-back').style.display = 'block';
+  }
+});
+
+</script>
+
+</body>
+</html>
